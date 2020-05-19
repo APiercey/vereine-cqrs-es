@@ -2,7 +2,7 @@ defmodule Vereine.Aggregates.Organization do
   use GenServer
   require Logger
 
-  defstruct [:id, :status, :name, :can_hire, :can_aquire_funding]
+  defstruct [:id, :status, :name]
 
   alias Vereine.Commands.{
     SubmitApplication,
@@ -35,96 +35,77 @@ defmodule Vereine.Aggregates.Organization do
 
   def generate_id(), do: UUID.uuid4()
 
-  def apply(%{id: id} = event) do
-    {:ok, pid} =
-      case Process.whereis(:"#{id}") do
-        nil -> {:ok, _pid} = start_link(id)
-        pid -> {:ok, pid}
-      end
-
-    publish_event(id, event)
+  def execute(%__MODULE__{id: nil}, %SubmitApplication{id: id, name: name}) do
+    {:ok, %ApplicationSubmitted{id: id, name: name}}
   end
 
-  def execute(%SubmitApplication{id: id, name: name} = command) do
+  def execute(%__MODULE__{status: 'open', name: nil, id: id}, %FinalizeApplication{}) do
+    {:ok, %ApplicationRejected{id: id}}
+  end
+
+  def execute(%__MODULE__{status: 'open', id: id}, %FinalizeApplication{}) do
+    {:ok, %ApplicationAccepted{id: id}}
+  end
+
+  def execute(%__MODULE__{status: 'open'}, %AddFeature{id: id} = command) do
+    {:ok, %FeatureAdded{id: id, feature: command.feature}}
+  end
+
+  def dispatch(%{id: id} = command) do
     with true <- Vereine.Command.valid?(command),
-         nil <- Process.whereis(:"#{id}"),
-         event <- %ApplicationSubmitted{id: id, name: name},
-         :ok <- apply(event) do
+         %__MODULE__{} = data <- get_aggregate(id),
+         {:ok, event} <- execute(data, command),
+         {:ok, _pid} <- maybe_start_server(id),
+         :ok <- publish_event(id, event) do
       {:ok, event}
     else
       err -> {:error, err}
     end
   end
 
-  def execute(%FinalizeApplication{id: id} = command) do
-    with true <- Vereine.Command.valid?(command),
-         {:ok, %{data: data}} <- get(id),
-         {:status_check, %{status: 'open'}} <- {:status_check, data},
-         {:event, event} <- {:event, accept_or_reject_application(data)},
-         :ok <- apply(event) do
-      {:ok, event}
-    else
-      err -> {:error, err}
+  def maybe_start_server(id) do
+    case Process.whereis(:"#{id}") do
+      nil -> {:ok, _pid} = start_link(id)
+      pid -> {:ok, pid}
     end
   end
 
-  def execute(%AddFeature{id: id} = command) do
-    with true <- Vereine.Command.valid?(command),
-         {:ok, %{data: data}} <- get(id),
-         %{status: 'open'} <- data,
-         event <- %FeatureAdded{id: id, feature: command.feature},
-         :ok <- apply(event) do
-      {:ok, event}
-    else
-      err -> {:error, err}
-    end
+  def get_aggregate(id) do
+    :"#{id}"
+    |> Process.whereis()
+    |> fetch_data()
   end
 
-  def accept_or_reject_application(%{id: id, name: nil}),
-    do: %ApplicationRejected{id: id}
-
-  def accept_or_reject_application(%{id: id}),
-    do: %ApplicationAccepted{id: id}
-
-  def get(id),
-    do: GenServer.call(:"#{id}", :get)
-
-  def handle_info(
-        {:publish_event, %ApplicationSubmitted{name: name}},
-        %{data: data} = state
-      ) do
-    new_data = %{data | status: 'open', name: name}
-    new_state = %{state | data: new_data}
-    {:noreply, new_state}
+  def fetch_data(nil) do
+    %__MODULE__{}
   end
 
-  def handle_info({:publish_event, %ApplicationAccepted{}}, %{data: data} = state) do
-    new_data = %{data | status: 'approved'}
-    new_state = %{state | data: new_data}
-    {:noreply, new_state}
+  def fetch_data(pid) do
+    {:ok, %{data: %__MODULE__{} = data}} = get(pid)
+    data
   end
 
-  def handle_info({:publish_event, %ApplicationRejected{}}, %{data: data} = state) do
-    new_data = %{data | status: 'rejected'}
-    new_state = %{state | data: new_data}
-    {:noreply, new_state}
+  def get(id), do: GenServer.call(:"#{id}", :get)
+
+  def handle_info({:publish_event, event}, %{data: data} = state) do
+    {:noreply, %{state | data: apply_event(data, event)}}
   end
 
-  def handle_info({:publish_event, %FeatureAdded{feature: :employeer}}, %{data: data} = state) do
-    new_data = %{data | can_hire: true}
-    new_state = %{state | data: new_data}
-    {:noreply, new_state}
+  def apply_event(state, %ApplicationAccepted{}) do
+    %{state | status: 'accepted'}
   end
 
-  def handle_info({:publish_event, %FeatureAdded{feature: :fundable}}, %{data: data} = state) do
-    new_data = %{data | can_aquire_funding: true}
-    new_state = %{state | data: new_data}
-    {:noreply, new_state}
+  def apply_event(state, %ApplicationRejected{}) do
+    %{state | status: 'rejected'}
   end
 
-  def handle_info({:publish_event, event}, state) do
+  def apply_event(state, %ApplicationSubmitted{name: name}) do
+    %{state | status: 'open', name: name}
+  end
+
+  def apply(state, event) do
     Logger.info("Event not support for #{event.__struct__}")
-    {:noreply, state}
+    state
   end
 
   def handle_call(:get, _from, state),
@@ -134,7 +115,7 @@ defmodule Vereine.Aggregates.Organization do
     Logger.info("Publish event")
 
     Registry.dispatch(:event_stream, id, fn entries ->
-      entries 
+      entries
       |> Enum.map(fn {pid, _} -> pid end)
       |> Enum.map(fn pid -> send(pid, {:publish_event, event}) end)
     end)

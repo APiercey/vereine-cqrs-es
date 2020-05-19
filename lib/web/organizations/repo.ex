@@ -2,8 +2,7 @@ defmodule Web.Organizations.Repo do
   alias :mnesia, as: Mnesia
   alias Web.Organizations.Organization
 
-  def one(nil),
-    do: {:error, "nil is not a valid ID"}
+  def one(nil), do: {:error, "nil is not a valid ID"}
 
   def one(id) do
     fn ->
@@ -12,7 +11,7 @@ defmodule Web.Organizations.Repo do
     |> Mnesia.transaction()
     |> case do
       {:atomic, result} -> result |> record_to_organization()
-      {:aborted, reason} = error -> {:error, error}
+      {:aborted, _reason} = error -> {:error, error}
     end
   end
 
@@ -25,24 +24,23 @@ defmodule Web.Organizations.Repo do
       {:atomic, result} ->
         result |> Enum.map(&record_to_organization/1)
 
-      {:aborted, reason} = error ->
+      {:aborted, _reason} = error ->
         {:error, error}
     end
   end
 
-  def insert(%Organization{id: id} = organization) do
+  def store(%Organization{id: id} = organization) do
     fn ->
       Mnesia.write({Organization, id, organization})
     end
     |> Mnesia.transaction()
     |> case do
       {:atomic, :ok} -> {:ok, organization}
-      {:aborted, reason} = error -> {:error, error}
+      {:aborted, _reason} = error -> {:error, error}
     end
   end
 
-  def insert(_), do: {:error, :incorrect_format}
+  def store(_), do: {:error, :incorrect_format}
 
-  defp record_to_organization({Organization, _id, data}),
-    do: Organization.new(data)
+  defp record_to_organization({Organization, _id, data}), do: Organization.new(data)
 end
