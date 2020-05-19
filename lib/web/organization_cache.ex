@@ -3,7 +3,7 @@ defmodule Web.OrganizationCache do
 
   alias Vereine.Events.ApplicationAccepted
 
-  def start_link() do
+  def start_link(_) do
     Agent.start_link(fn -> %{} end, name: __MODULE__)
   end
 
@@ -18,6 +18,10 @@ defmodule Web.OrganizationCache do
         deep_merge(state, %{"#{id}": %{active: true}})
       end
     )
+  end
+
+  def apply(_event) do
+
   end
 
   defp deep_merge(left, right) do
