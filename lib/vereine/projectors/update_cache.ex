@@ -3,7 +3,7 @@ defmodule Vereine.Projecters.UpdateCache do
   require Logger
 
   def start_link(id) do
-    GenServer.start_link(__MODULE__, id, name: __MODULE__)
+    GenServer.start_link(__MODULE__, id, name: :"#{__MODULE__}_#{id}")
   end
 
   def init(id) do
@@ -12,7 +12,7 @@ defmodule Vereine.Projecters.UpdateCache do
   end
 
   def handle_info({:publish_event, event}, state) do
-    Logger.info("Received event: #{event.__struct__}")
+    Web.OrganizationCache.apply(event)
     {:noreply, [state | event]}
   end
 end
