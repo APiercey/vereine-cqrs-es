@@ -5,10 +5,13 @@ alias Vereine.{
 
 id = Organization.generate_id()
 
-%Commands.SubmitApplication{id: id, name: "test"} |> Organization.dispatch()
-%Commands.AddFeature{id: id, feature: :fundable} |> Organization.dispatch()
-%Commands.AddFeature{id: id, feature: :employeer} |> Organization.dispatch()
-%Commands.FinalizeApplication{id: id} |> Organization.dispatch()
+[
+  %Commands.SubmitApplication{id: id, name: "test"},
+  %Commands.AddFeature{id: id, feature: :fundable},
+  %Commands.AddFeature{id: id, feature: :employeer},
+  %Commands.FinalizeApplication{id: id}
+]
+|> Enum.map(&Organization.dispatch/1)
 
 Web.Organizations.one(id)
 Web.Organizations.all()
