@@ -10,12 +10,13 @@ defmodule Mix.Tasks.Db.Create do
   @impl Mix.Task
   def run(_) do
     home = node()
+
     [home]
-    |> Mnesia.create_schema() 
+    |> Mnesia.create_schema()
     |> case do
       {:error, {^home, {:already_exists, ^home}}} -> "Database already created"
       :ok -> "Database created"
     end
-    |> Logger.info
+    |> Logger.info()
   end
 end

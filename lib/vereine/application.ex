@@ -9,8 +9,7 @@ defmodule Vereine.Application do
     children = [
       # Starts a worker by calling: Vereine.Worker.start_link(arg)
       # {Vereine.Worker, arg}
-      {Registry, [keys: :duplicate, name: :event_stream]},
-      Web.OrganizationCache
+      {Registry, [keys: :duplicate, name: :event_stream]}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

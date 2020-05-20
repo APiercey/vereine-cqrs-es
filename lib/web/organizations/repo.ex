@@ -10,8 +10,11 @@ defmodule Web.Organizations.Repo do
     end
     |> Mnesia.transaction()
     |> case do
-      {:atomic, result} -> result |> record_to_organization()
-      {:aborted, _reason} = error -> {:error, error}
+      {:atomic, [{_module, _id, organization}]} ->
+        organization
+
+      {:aborted, _reason} = error ->
+        {:error, error}
     end
   end
 
@@ -22,7 +25,7 @@ defmodule Web.Organizations.Repo do
     |> Mnesia.transaction()
     |> case do
       {:atomic, result} ->
-        result |> Enum.map(&record_to_organization/1)
+        result |> Enum.map(fn {_module, _id, organization} -> organization end)
 
       {:aborted, _reason} = error ->
         {:error, error}
@@ -41,6 +44,4 @@ defmodule Web.Organizations.Repo do
   end
 
   def store(_), do: {:error, :incorrect_format}
-
-  defp record_to_organization({Organization, _id, data}), do: Organization.new(data)
 end
