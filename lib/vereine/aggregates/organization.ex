@@ -20,11 +20,14 @@ defmodule Vereine.Aggregates.Organization do
 
   use Vereine.Aggregate, projectors: [UpdateWeb]
 
-  def execute(%__MODULE__{id: nil}, %SubmitApplication{id: id, name: name}),
+  def execute(%__MODULE__{status: nil}, %SubmitApplication{id: id, name: name}),
     do: {:ok, %ApplicationSubmitted{id: id, name: name}}
 
-  def execute(%__MODULE__{}, %SubmitApplication{}),
+  def execute(%__MODULE__{status: 'open'}, %SubmitApplication{}),
     do: {:error, "Application already submitted"}
+
+  def execute(%__MODULE__{}, %SubmitApplication{}),
+    do: {:error, "Sorry, this application cannot be changed"}
 
   def execute(%__MODULE__{status: 'open', name: nil, id: id}, %FinalizeApplication{}),
     do: {:ok, %ApplicationRejected{id: id}}
@@ -35,12 +38,18 @@ defmodule Vereine.Aggregates.Organization do
   def execute(%__MODULE__{status: 'open'}, %AddFeature{id: id} = command),
     do: {:ok, %FeatureAdded{id: id, feature: command.feature}}
 
+  def execute(%__MODULE__{}, %AddFeature{}),
+    do: {:error, "Sorry, a feature cannot be added to this application"}
+
   def execute(%__MODULE__{}, _command), do: {:error, "Command not processed"}
 
-  def apply_event(state, %ApplicationAccepted{}), do: %{state | status: 'accepted'}
-  def apply_event(state, %ApplicationRejected{}), do: %{state | status: 'rejected'}
+  def apply_event(%__MODULE__{} = state, %ApplicationAccepted{}),
+    do: %{state | status: 'accepted'}
 
-  def apply_event(state, %ApplicationSubmitted{name: name}),
+  def apply_event(%__MODULE__{} = state, %ApplicationRejected{}),
+    do: %{state | status: 'rejected'}
+
+  def apply_event(%__MODULE__{} = state, %ApplicationSubmitted{name: name}),
     do: %{state | status: 'open', name: name}
 
   def apply_event(state, event) do

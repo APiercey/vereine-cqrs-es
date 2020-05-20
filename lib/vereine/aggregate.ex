@@ -9,8 +9,7 @@ defmodule Vereine.Aggregate do
         do: GenServer.start_link(__MODULE__, [id, %__MODULE__{id: id}], name: :"#{id}")
 
       def init([id, data]) do
-        with {:ok, pid_tuples} <- start_projectors(id, unquote(projectors)),
-             {:ok, _} <- Registry.register(:event_stream, id, []) do
+        with {:ok, pid_tuples} <- start_projectors(id, unquote(projectors)) do
           {:ok, %{data: data, pid_tuples: pid_tuples}}
         else
           err -> {:error, err}
@@ -28,14 +27,14 @@ defmodule Vereine.Aggregate do
       end
 
       def generate_id(), do: UUID.uuid4()
+      def get(id), do: GenServer.call(:"#{id}", :get)
 
       def dispatch(%{id: id} = command) do
         with true <- Vereine.Command.valid?(command),
-             %__MODULE__{} = data <- get_aggregate(id),
-             {:ok, event} <- execute(data, command),
              {:ok, _pid} <- maybe_start_server(id),
+             {:ok, event} <- GenServer.call(:"#{id}", {:execute_command, command}),
              :ok <- publish_event(id, event) do
-          {:ok, event}
+          {:ok, id}
         end
       end
 
@@ -46,21 +45,14 @@ defmodule Vereine.Aggregate do
         end
       end
 
-      def get_aggregate(id) do
-        case Process.whereis(:"#{id}") do
-          nil ->
-            %__MODULE__{}
+      def handle_call({:execute_command, command}, _from, %{data: data} = state) do
+        case execute(data, command) do
+          {:error, _} = error ->
+            {:reply, error, state}
 
-          _pid ->
-            {:ok, %{data: %__MODULE__{} = data}} = get(:"#{id}")
-            data
+          {:ok, event} ->
+            {:reply, {:ok, event}, %{state | data: apply_event(data, event)}}
         end
-      end
-
-      def get(id), do: GenServer.call(:"#{id}", :get)
-
-      def handle_info({:publish_event, event}, %{data: data} = state) do
-        {:noreply, %{state | data: apply_event(data, event)}}
       end
 
       def handle_call(:get, _from, state),
