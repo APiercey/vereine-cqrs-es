@@ -16,17 +16,6 @@ defmodule Vereine.Aggregate do
         end
       end
 
-      def start_projectors(id, modules) do
-        result =
-          Enum.map(modules, fn module ->
-            {:ok, pid} = module.start_link(id)
-            {module, pid}
-          end)
-
-        {:ok, result}
-      end
-
-      def generate_id(), do: UUID.uuid4()
       def get(id), do: GenServer.call(:"#{id}", :get)
 
       def dispatch(%{id: id} = command) do
@@ -38,7 +27,17 @@ defmodule Vereine.Aggregate do
         end
       end
 
-      def maybe_start_server(id) do
+      defp start_projectors(id, modules) do
+        result =
+          Enum.map(modules, fn module ->
+            {:ok, pid} = module.start_link(id)
+            {module, pid}
+          end)
+
+        {:ok, result}
+      end
+
+      defp maybe_start_server(id) do
         case Process.whereis(:"#{id}") do
           nil -> {:ok, _pid} = start_link(id)
           pid -> {:ok, pid}

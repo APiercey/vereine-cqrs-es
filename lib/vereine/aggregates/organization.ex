@@ -20,6 +20,8 @@ defmodule Vereine.Aggregates.Organization do
 
   use Vereine.Aggregate, projectors: [UpdateWeb]
 
+  def generate_id(), do: UUID.uuid4()
+
   def execute(%__MODULE__{status: nil}, %SubmitApplication{id: id, name: name}),
     do: {:ok, %ApplicationSubmitted{id: id, name: name}}
 
