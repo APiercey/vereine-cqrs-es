@@ -1,3 +1,3 @@
 defmodule Vereine.Events.FeatureAdded do
-  defstruct [:id, :feature, :timestamp]
+  defstruct [:id, :feature]
 end

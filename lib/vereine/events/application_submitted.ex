@@ -1,3 +1,3 @@
 defmodule Vereine.Events.ApplicationSubmitted do
-  defstruct [:id, :name, :timestamp]
+  defstruct [:id, :name]
 end
