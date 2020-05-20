@@ -22,6 +22,7 @@ defmodule Vereine.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
+      {:plug_cowboy, "~> 2.0"},
       {:elixir_uuid, "~> 1.2"}
     ]
   end

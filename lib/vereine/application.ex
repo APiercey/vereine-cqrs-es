@@ -7,8 +7,7 @@ defmodule Vereine.Application do
 
   def start(_type, _args) do
     children = [
-      # Starts a worker by calling: Vereine.Worker.start_link(arg)
-      # {Vereine.Worker, arg}
+      # Plug.Cowboy.child_spec(scheme: :http, plug: Web.Router, options: [port: 4000]),
       {Registry, [keys: :duplicate, name: :event_stream]}
     ]
 
