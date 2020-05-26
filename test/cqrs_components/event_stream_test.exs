@@ -1,7 +1,7 @@
-defmodule Vereine.EventStreamTest do
+defmodule CQRSComponents.EventStreamTest do
   use Vereine.DataCase, async: false
 
-  alias Vereine.EventStream
+  alias CQRSComponents.EventStream
 
   def fixture(:event),
     do: %{id: "uuid-1", message: "Are the animals happy? Who the hell knows."}

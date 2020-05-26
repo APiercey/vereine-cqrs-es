@@ -1,4 +1,4 @@
-defmodule Vereine.Projector do
+defmodule CQRSComponents.Projector do
   defmacro __using__(_opts) do
     quote do
       def start_link(id) do

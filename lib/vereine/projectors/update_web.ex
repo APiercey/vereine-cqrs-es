@@ -1,5 +1,5 @@
 defmodule Vereine.Projecters.UpdateWeb do
-  use Vereine.Projector
+  use CQRSComponents.Projector
 
   def handle_event(event) do
     :ok = Web.Organizations.publish_event(event)

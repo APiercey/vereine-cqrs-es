@@ -1,7 +1,7 @@
 defmodule Fakes.FakeAggregate do
   defstruct [:id, :message]
 
-  use Vereine.Aggregate
+  use CQRSComponents.Aggregate
 
   alias Fakes.{
     FakeCommand,

@@ -2,7 +2,7 @@ defmodule Vereine.Commands.SubmitApplication do
   defstruct [:id, :name]
 end
 
-defimpl Vereine.Command, for: Vereine.Commands.SubmitApplication do
+defimpl CQRSComponents.Command, for: Vereine.Commands.SubmitApplication do
   def valid?(command) do
     [&has_id/1]
     |> Enum.map(fn fun -> fun.(command) end)

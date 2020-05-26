@@ -1,4 +1,4 @@
-defmodule Vereine.AggregateTest do
+defmodule CQRSComponents.AggregateTest do
   use ExUnit.Case
 
   alias Fakes.{

@@ -1,6 +1,8 @@
 defmodule Vereine.Aggregates.Organization do
   defstruct [:id, :status, :name]
 
+  require Logger
+
   alias Vereine.Commands.{
     SubmitApplication,
     FinalizeApplication,
@@ -18,7 +20,7 @@ defmodule Vereine.Aggregates.Organization do
     UpdateWeb
   }
 
-  use Vereine.Aggregate, projectors: [UpdateWeb]
+  use CQRSComponents.Aggregate, projectors: [UpdateWeb]
 
   def generate_id(), do: UUID.uuid4()
 

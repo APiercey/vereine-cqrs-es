@@ -1,4 +1,4 @@
-defmodule Vereine.EventStream do
+defmodule CQRSComponents.EventStream do
   alias :mnesia, as: Mnesia
 
   def store_event(aggregate_id, event) do

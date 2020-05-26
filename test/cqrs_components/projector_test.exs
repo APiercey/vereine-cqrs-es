@@ -1,4 +1,4 @@
-defmodule Vereine.ProjectorTest do
+defmodule CQRSComponents.ProjectorTest do
   use ExUnit.Case
 
   alias Fakes.{

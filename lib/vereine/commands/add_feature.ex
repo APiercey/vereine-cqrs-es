@@ -2,7 +2,7 @@ defmodule Vereine.Commands.AddFeature do
   defstruct [:id, :feature]
 end
 
-defimpl Vereine.Command, for: Vereine.Commands.AddFeature do
+defimpl CQRSComponents.Command, for: Vereine.Commands.AddFeature do
   def valid?(command) do
     [&has_id/1, &has_feature/1]
     |> Enum.map(fn fun -> fun.(command) end)
