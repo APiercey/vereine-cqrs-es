@@ -16,7 +16,12 @@ defmodule Vereine.Aggregate do
         end
       end
 
-      def get(id), do: GenServer.call(:"#{id}", :get)
+      def get(id) do
+        case Process.whereis(:"#{id}") do
+          nil -> {:error, "The aggregate is not alive with id #{id}"}
+          _ -> GenServer.call(:"#{id}", :get)
+        end
+      end
 
       def dispatch(%{id: id} = command) do
         with true <- Vereine.Command.valid?(command),

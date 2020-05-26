@@ -37,6 +37,9 @@ defmodule Vereine.Aggregates.Organization do
   def execute(%__MODULE__{status: 'open', id: id}, %FinalizeApplication{}),
     do: {:ok, %ApplicationAccepted{id: id}}
 
+  def execute(%__MODULE__{}, %FinalizeApplication{}),
+    do: {:error, "This application is already finalized"}
+
   def execute(%__MODULE__{status: 'open'}, %AddFeature{id: id} = command),
     do: {:ok, %FeatureAdded{id: id, feature: command.feature}}
 

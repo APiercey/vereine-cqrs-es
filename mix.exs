@@ -7,7 +7,8 @@ defmodule Vereine.MixProject do
       version: "0.1.0",
       elixir: "~> 1.9",
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
+      elixirc_paths: compiler_paths(Mix.env())
     ]
   end
 
@@ -18,6 +19,9 @@ defmodule Vereine.MixProject do
       mod: {Vereine.Application, []}
     ]
   end
+
+  def compiler_paths(:test), do: ["test/fakes" | compiler_paths(:prod)]
+  def compiler_paths(_), do: ["lib"]
 
   # Run "mix help deps" to learn about dependencies.
   defp deps do
