@@ -3,11 +3,10 @@ defmodule Vereine.Aggregate do
     projectors = Keyword.get(opts, :projectors, [])
 
     quote do
-      require Logger
-
       def start_link(id),
         do: GenServer.start_link(__MODULE__, [id, %__MODULE__{id: id}], name: :"#{id}")
 
+      # TODO: Fetch events and reduce into data state
       def init([id, data]) do
         with {:ok, pid_tuples} <- start_projectors(id, unquote(projectors)) do
           {:ok, %{data: data, pid_tuples: pid_tuples}}
