@@ -27,6 +27,7 @@ defmodule Vereine.Aggregate do
         with true <- Vereine.Command.valid?(command),
              {:ok, _pid} <- maybe_start_server(id),
              {:ok, event} <- GenServer.call(:"#{id}", {:execute_command, command}),
+             :ok <- Vereine.EventStream.store_event(id, event),
              :ok <- publish_event(id, event) do
           {:ok, id}
         end

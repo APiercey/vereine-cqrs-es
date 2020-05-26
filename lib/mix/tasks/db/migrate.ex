@@ -18,6 +18,20 @@ defmodule Mix.Tasks.Db.Migrate do
   end
 
   defp migrate do
+    with :ok <- create_event_stream(),
+         :ok <- create_organization() do
+      :ok
+    end
+  end
+
+  defp create_event_stream do
+    case Mnesia.create_table(EventStream, attributes: [:event_id, :aggegate_id, :timestamp, :data]) do
+      {:atomic, :ok} -> :ok
+      {:aborted, {:already_exists, Organization}} -> :ok
+    end
+  end
+
+  defp create_organization do
     case Mnesia.create_table(Organization, attributes: [:id, :data]) do
       {:atomic, :ok} -> :ok
       {:aborted, {:already_exists, Organization}} -> :ok
