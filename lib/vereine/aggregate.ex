@@ -35,7 +35,7 @@ defmodule Vereine.Aggregate do
       defp start_projectors(id, modules) do
         result =
           Enum.map(modules, fn module ->
-            {:ok, pid} = module.start_link(id)
+            {:ok, pid} = module.start_link("#{module}_#{id}")
             {module, pid}
           end)
 
