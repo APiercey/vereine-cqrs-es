@@ -9,6 +9,7 @@ defmodule Vereine.EventStream do
     end
   end
 
+  # TODO: Ensure the events are returned ordered by timestamp
   def fetch_events_by_aggregate_id(aggregate_id) do
     fn ->
       Mnesia.match_object({EventStream, :_, aggregate_id, :_, :_})
@@ -16,7 +17,8 @@ defmodule Vereine.EventStream do
     |> Mnesia.transaction()
     |> case do
       {:atomic, result} ->
-        result |> Enum.map(fn {_module, _event_id, _aggregate_id, _timestamp, event} -> event end)
+        result
+        |> Enum.map(fn {_module, _event_id, _aggregate_id, _timestamp, event} -> event end)
 
       {:aborted, _reason} = error ->
         {:error, error}

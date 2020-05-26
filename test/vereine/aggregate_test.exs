@@ -32,7 +32,7 @@ defmodule Vereine.AggregateTest do
 
     test "multiple aggregates don't share event streams" do
       %{id: expected_id} = command_one = fixture(:command, id: "one")
-      %{id: unexpected_id} = command_two = fixture(:command, id: "two")
+      %{id: _unexpected_id} = command_two = fixture(:command, id: "two")
 
       Registry.register(:event_stream, expected_id, [])
 

@@ -64,8 +64,6 @@ defmodule Vereine.Aggregate do
         do: {:reply, {:ok, state}, state}
 
       defp publish_event(id, event) do
-        Logger.info("Publish event")
-
         Registry.dispatch(:event_stream, id, fn entries ->
           entries
           |> Enum.map(fn {pid, _} -> pid end)

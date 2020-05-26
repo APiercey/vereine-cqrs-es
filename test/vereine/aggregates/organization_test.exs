@@ -59,14 +59,14 @@ defmodule Vereine.Aggregates.OrganizationTest do
     end
 
     test "returns :error if application has not been submitted" do
-      %{feature: feature} = command = fixture(:add_feature)
+      command = fixture(:add_feature)
 
       assert {:error, error} = Organization.execute(%Organization{status: nil}, command)
       assert error =~ "cannot be added"
     end
 
     test "returns :error if application has status other than open" do
-      %{feature: feature} = command = fixture(:add_feature)
+      command = fixture(:add_feature)
 
       assert {:error, error} =
                Organization.execute(%Organization{status: 'random_status'}, command)

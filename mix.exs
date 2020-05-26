@@ -20,7 +20,7 @@ defmodule Vereine.MixProject do
     ]
   end
 
-  def compiler_paths(:test), do: ["test/fakes" | compiler_paths(:prod)]
+  def compiler_paths(:test), do: ["test/fakes", "test/support"] ++ compiler_paths(:prod)
   def compiler_paths(_), do: ["lib"]
 
   # Run "mix help deps" to learn about dependencies.

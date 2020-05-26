@@ -8,7 +8,7 @@ defmodule Vereine.ProjectorTest do
   @id "uuid-1"
 
   setup do
-    {:ok, pid} = FakeProjector.start_link(@id)
+    {:ok, _pid} = FakeProjector.start_link(@id)
     :ok
   end
 
