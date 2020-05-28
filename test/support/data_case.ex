@@ -1,4 +1,4 @@
-defmodule Vereine.DataCase do
+defmodule Support.DataCase do
   use ExUnit.CaseTemplate
   alias :mnesia, as: Mnesia
 

@@ -9,7 +9,8 @@ defmodule CQRSComponents.EventStream do
     end
   end
 
-  # TODO: Ensure the events are returned ordered by timestamp
+  # NOTE: It's not possible for the disributed table to return events
+  # in an ordered manner. Consider sorting the events by date after fetching
   def fetch_events_by_aggregate_id(aggregate_id) do
     fn ->
       Mnesia.match_object({EventStream, :_, aggregate_id, :_, :_})

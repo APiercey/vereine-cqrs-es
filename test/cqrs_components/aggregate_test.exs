@@ -1,5 +1,5 @@
 defmodule CQRSComponents.AggregateTest do
-  use Vereine.DataCase
+  use Support.DataCase, async: false
 
   alias Fakes.{
     FakeAggregate,
