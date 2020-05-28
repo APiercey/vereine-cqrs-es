@@ -1,4 +1,4 @@
-defmodule Vereine.Aggregates.Organization do
+defmodule Vereine.Aggregates.Antrag do
   defstruct [:id, :status, :name]
 
   require Logger

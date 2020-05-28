@@ -1,7 +1,7 @@
-defmodule Vereine.Aggregates.OrganizationTest do
+defmodule Vereine.Aggregates.AntragTest do
   use ExUnit.Case
 
-  alias Vereine.Aggregates.Organization
+  alias Vereine.Aggregates.Antrag
 
   alias Vereine.Commands.{
     SubmitApplication,
@@ -29,22 +29,20 @@ defmodule Vereine.Aggregates.OrganizationTest do
     test "returns ApplicationSubmitted event when application is not open" do
       %{name: name} = command = fixture(:submit_application)
 
-      assert {:ok, %ApplicationSubmitted{name: ^name}} =
-               Organization.execute(%Organization{id: nil}, command)
+      assert {:ok, %ApplicationSubmitted{name: ^name}} = Antrag.execute(%Antrag{id: nil}, command)
     end
 
     test "returns :error if application already submitted" do
       command = fixture(:submit_application)
 
-      assert {:error, error} = Organization.execute(%Organization{status: 'open'}, command)
+      assert {:error, error} = Antrag.execute(%Antrag{status: 'open'}, command)
       assert error =~ "already submitted"
     end
 
     test "returns :error if application has a status other than open" do
       command = fixture(:submit_application)
 
-      assert {:error, error} =
-               Organization.execute(%Organization{status: 'random_status'}, command)
+      assert {:error, error} = Antrag.execute(%Antrag{status: 'random_status'}, command)
 
       assert error =~ "cannot be changed"
     end
@@ -55,21 +53,20 @@ defmodule Vereine.Aggregates.OrganizationTest do
       %{feature: feature} = command = fixture(:add_feature)
 
       assert {:ok, %FeatureAdded{feature: ^feature}} =
-               Organization.execute(%Organization{status: 'open'}, command)
+               Antrag.execute(%Antrag{status: 'open'}, command)
     end
 
     test "returns :error if application has not been submitted" do
       command = fixture(:add_feature)
 
-      assert {:error, error} = Organization.execute(%Organization{status: nil}, command)
+      assert {:error, error} = Antrag.execute(%Antrag{status: nil}, command)
       assert error =~ "cannot be added"
     end
 
     test "returns :error if application has status other than open" do
       command = fixture(:add_feature)
 
-      assert {:error, error} =
-               Organization.execute(%Organization{status: 'random_status'}, command)
+      assert {:error, error} = Antrag.execute(%Antrag{status: 'random_status'}, command)
 
       assert error =~ "cannot be added"
     end
@@ -80,22 +77,22 @@ defmodule Vereine.Aggregates.OrganizationTest do
       command = fixture(:finalize_application)
 
       assert {:ok, %ApplicationAccepted{}} =
-               %Organization{status: 'open', name: 'test'}
-               |> Organization.execute(command)
+               %Antrag{status: 'open', name: 'test'}
+               |> Antrag.execute(command)
     end
 
     test "returns ApplicationRejected event when application is open and invalid" do
       command = fixture(:finalize_application)
 
       assert {:ok, %ApplicationRejected{}} =
-               %Organization{status: 'open', name: nil}
-               |> Organization.execute(command)
+               %Antrag{status: 'open', name: nil}
+               |> Antrag.execute(command)
     end
 
     test "returns :error if application has already been finalized" do
       command = fixture(:finalize_application)
 
-      assert {:error, error} = Organization.execute(%Organization{status: nil}, command)
+      assert {:error, error} = Antrag.execute(%Antrag{status: nil}, command)
       assert error =~ "already finalized"
     end
   end
@@ -105,15 +102,15 @@ defmodule Vereine.Aggregates.OrganizationTest do
       id = "985a1caf-3fe9-4338-93ed-905409251013"
       name = "Fancy name!"
 
-      assert %Organization{id: ^id, name: ^name, status: 'accepted'} =
+      assert %Antrag{id: ^id, name: ^name, status: 'accepted'} =
                [
                  %ApplicationSubmitted{id: id, name: name},
                  %FeatureAdded{id: id},
                  %ApplicationAccepted{id: id}
                ]
                |> Enum.reduce(
-                 %Organization{id: id},
-                 &Organization.apply_event(&2, &1)
+                 %Antrag{id: id},
+                 &Antrag.apply_event(&2, &1)
                )
     end
 
@@ -121,14 +118,14 @@ defmodule Vereine.Aggregates.OrganizationTest do
       id = "985a1caf-3fe9-4338-93ed-905409251013"
       name = "Fancy name!"
 
-      assert %Organization{id: ^id, name: ^name, status: 'rejected'} =
+      assert %Antrag{id: ^id, name: ^name, status: 'rejected'} =
                [
                  %ApplicationSubmitted{id: id, name: name},
                  %ApplicationRejected{id: id}
                ]
                |> Enum.reduce(
-                 %Organization{id: id},
-                 &Organization.apply_event(&2, &1)
+                 %Antrag{id: id},
+                 &Antrag.apply_event(&2, &1)
                )
     end
   end
