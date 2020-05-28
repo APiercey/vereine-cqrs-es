@@ -7,9 +7,10 @@ defmodule CQRSComponents.Aggregate do
         do: GenServer.start_link(__MODULE__, [id, %__MODULE__{id: id}], name: :"#{id}")
 
       # TODO: Fetch events and reduce into data state
-      def init([id, data]) do
-        with {:ok, pid_tuples} <- start_projectors(id, unquote(projectors)) do
-          {:ok, %{data: data, pid_tuples: pid_tuples}}
+      def init([id, init_state]) do
+        with state <- build_state(id, init_state),
+             {:ok, pid_tuples} <- start_projectors(id, unquote(projectors)) do
+          {:ok, %{data: state, pid_tuples: pid_tuples}}
         else
           err -> {:error, err}
         end
@@ -32,6 +33,12 @@ defmodule CQRSComponents.Aggregate do
         end
       end
 
+      defp build_state(id, data) do
+        id
+        |> CQRSComponents.EventStream.fetch_events_by_aggregate_id()
+        |> Enum.reduce(data, &apply_event(&2, &1))
+      end
+
       defp start_projectors(id, modules) do
         result =
           Enum.map(modules, fn module ->
@@ -44,8 +51,12 @@ defmodule CQRSComponents.Aggregate do
 
       defp maybe_start_server(id) do
         case Process.whereis(:"#{id}") do
-          nil -> {:ok, _pid} = start_link(id)
-          pid -> {:ok, pid}
+          nil ->
+            {:ok, _pid} =
+              DynamicSupervisor.start_child(CQRSComponents.AggregateSupervisor, {__MODULE__, id})
+
+          pid ->
+            {:ok, pid}
         end
       end
 
@@ -70,6 +81,16 @@ defmodule CQRSComponents.Aggregate do
         end)
 
         :ok
+      end
+
+      def child_spec(opts) do
+        %{
+          id: __MODULE__,
+          start: {__MODULE__, :start_link, [opts]},
+          type: :worker,
+          restart: :permanent,
+          shutdown: 500
+        }
       end
     end
   end

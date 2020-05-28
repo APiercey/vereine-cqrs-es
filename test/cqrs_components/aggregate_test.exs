@@ -1,5 +1,5 @@
 defmodule CQRSComponents.AggregateTest do
-  use ExUnit.Case
+  use Vereine.DataCase
 
   alias Fakes.{
     FakeAggregate,
@@ -10,7 +10,7 @@ defmodule CQRSComponents.AggregateTest do
   def fixture(:command, opts \\ []),
     do: %FakeCommand{
       id: Keyword.get(opts, :id, "test"),
-      message: Keyword.get(opts, :id, "I will never financially recover from this.")
+      message: Keyword.get(opts, :message, "I will never financially recover from this.")
     }
 
   describe "dispatch/1" do
@@ -56,6 +56,27 @@ defmodule CQRSComponents.AggregateTest do
       assert {:error, message} = FakeAggregate.get(id)
       assert message =~ "not alive"
       assert message =~ id
+    end
+  end
+
+  describe "an aggregate that dies" do
+    test "is revived with previous state" do
+      %{id: id, message: message} = command = fixture(:command)
+
+      assert {:ok, ^id} = FakeAggregate.dispatch(command)
+
+      ref = Process.monitor(:"#{id}")
+
+      assert :"#{id}"
+             |> Process.whereis()
+             |> Process.exit(:brutalkill)
+
+      assert_receive {:DOWN, ^ref, :process, _, :brutalkill}, 500
+
+      # Force VM to context switch to another process
+      :timer.sleep(1)
+
+      assert {:ok, %{data: %{message: ^message}}} = FakeAggregate.get(id)
     end
   end
 end
