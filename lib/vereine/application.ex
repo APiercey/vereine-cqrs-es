@@ -7,7 +7,7 @@ defmodule Vereine.Application do
 
   def start(_type, _args) do
     children = [
-      # Plug.Cowboy.child_spec(scheme: :http, plug: Web.Router, options: [port: 4000]),
+      Plug.Cowboy.child_spec(scheme: :http, plug: Web.Router, options: [port: 4000]),
       {Registry, [keys: :duplicate, name: :event_stream]},
       CQRSComponents.AggregateSupervisor
     ]

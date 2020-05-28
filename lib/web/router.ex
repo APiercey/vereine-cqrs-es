@@ -1,4 +1,4 @@
-defmodule EventsPoller.Router do
+defmodule Web.Router do
   use Plug.Router
 
   plug(:match)
@@ -7,7 +7,7 @@ defmodule EventsPoller.Router do
   get("/hcheck", do: send_resp(conn, 200, "200 OK"))
   get("/favicon.ico", do: send_resp(conn, 200, ""))
 
-  get "/statistics" do
+  get "/applications" do
     data =
       %{}
       |> prepare_response
