@@ -1,5 +1,9 @@
 defmodule Vereine.Commands.AddFeature do
   defstruct [:id, :feature]
+
+  def new(attrs) do
+    struct(__MODULE__, attrs)
+  end
 end
 
 defimpl CQRSComponents.Command, for: Vereine.Commands.AddFeature do

@@ -1,5 +1,9 @@
 defmodule Vereine.Commands.FinalizeApplication do
   defstruct [:id]
+
+  def new(attrs) do
+    struct(__MODULE__, attrs)
+  end
 end
 
 defimpl CQRSComponents.Command, for: Vereine.Commands.FinalizeApplication do
