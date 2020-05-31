@@ -1,8 +1,6 @@
 defmodule Web.Applications.FinalizeTest do
   use Support.ApiAcceptanceCase
 
-  @valid_body ""
-
   describe "[POST] 202 /applications/:application_id/finalize" do
     setup do
       %{"id" => id} = create_application()
@@ -11,8 +9,8 @@ defmodule Web.Applications.FinalizeTest do
     end
 
     test "endpoint behaviour", %{application_id: application_id} do
-      "/applications/#{application_id}/finalize"
-      |> path()
+      application_id
+      |> url()
       |> post!("")
       |> returns_status(202)
       |> returns_json_header()
@@ -21,12 +19,16 @@ defmodule Web.Applications.FinalizeTest do
 
     test "returns application ID", %{application_id: application_id} do
       assert %{"id" => _id} =
-               "/applications/#{application_id}/finalize"
-               |> path()
-               |> post!(Jason.encode!(@valid_body))
+               application_id
+               |> url()
+               |> post!(Jason.encode!(""))
                |> parse_body()
                |> pluck_data
     end
+  end
+
+  def url(application_id) do
+    "/applications/#{application_id}/finalize" |> path()
   end
 
   defp create_application() do
