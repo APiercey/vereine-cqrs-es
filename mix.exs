@@ -27,6 +27,8 @@ defmodule Vereine.MixProject do
   defp deps do
     [
       {:plug_cowboy, "~> 2.0"},
+      {:jason, "~> 1.2"},
+      {:httpoison, "~> 1.6", env: :test},
       {:elixir_uuid, "~> 1.2"}
     ]
   end
