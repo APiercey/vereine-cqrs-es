@@ -24,12 +24,14 @@ defmodule CQRSComponents.Aggregate do
       end
 
       def dispatch(%{id: id} = command) do
-        with true <- CQRSComponents.Command.valid?(command),
+        with {:valid, true} <- {:valid, CQRSComponents.Command.valid?(command)},
              {:ok, _pid} <- maybe_start_server(id),
              {:ok, event} <- GenServer.call(:"#{id}", {:execute_command, command}),
              :ok <- CQRSComponents.EventStream.store_event(id, event),
              :ok <- publish_event(id, event) do
           {:ok, id}
+        else
+          {:valid, false} -> {:error, "Command was invalid"}
         end
       end
 
