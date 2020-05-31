@@ -1,10 +1,10 @@
-defmodule Web.Operations.Antrag.SubmitApplication do
+defmodule Web.Operations.Application.SubmitApplication do
   @validations [name: [presence: true]]
 
   def call(%Plug.Conn{} = conn) do
     with %{body_params: body_params} <- conn,
          :ok <- validate_body_params(body_params, @validations),
-         {:ok, id} <- Vereine.submit_antrag(body_params) do
+         {:ok, id} <- Vereine.submit_application(body_params) do
       conn
       |> Plug.Conn.put_status(202)
       |> Plug.Conn.assign(:body, %{id: id})

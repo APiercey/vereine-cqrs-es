@@ -1,5 +1,5 @@
 defmodule Vereine do
-  alias Vereine.Aggregates.Antrag
+  alias Vereine.Aggregates.Application
 
   alias Vereine.Commands.{
     SubmitApplication,
@@ -7,28 +7,28 @@ defmodule Vereine do
     FinalizeApplication
   }
 
-  def submit_antrag(attrs) do
+  def submit_application(attrs) do
     attrs
     |> SubmitApplication.new()
     |> SubmitApplication.add_id()
-    |> Antrag.dispatch()
+    |> Application.dispatch()
   end
 
-  def allow_employment(antrag_id) do
-    %{id: antrag_id, feature: :employeer}
+  def allow_employment(application_id) do
+    %{id: application_id, feature: :employeer}
     |> AddFeature.new()
-    |> Antrag.dispatch()
+    |> Application.dispatch()
   end
 
-  def allow_funding(antrag_id) do
-    %{id: antrag_id, feature: :fundable}
+  def allow_funding(application_id) do
+    %{id: application_id, feature: :fundable}
     |> AddFeature.new()
-    |> Antrag.dispatch()
+    |> Application.dispatch()
   end
 
-  def finalize_antrag(antrag_id) do
-    %{id: antrag_id}
+  def finalize_application(application_id) do
+    %{id: application_id}
     |> FinalizeApplication.new()
-    |> Antrag.dispatch()
+    |> Application.dispatch()
   end
 end

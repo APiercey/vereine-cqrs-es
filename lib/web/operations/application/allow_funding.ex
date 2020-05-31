@@ -1,4 +1,4 @@
-defmodule Web.Operations.Antrag.AllowFunding do
+defmodule Web.Operations.Application.AllowFunding do
   def call(%Plug.Conn{params: %{"application_id" => application_id}} = conn) do
     conn
     |> Plug.Conn.put_status(202)

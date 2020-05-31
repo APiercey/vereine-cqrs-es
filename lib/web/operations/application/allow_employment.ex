@@ -1,4 +1,4 @@
-defmodule Web.Operations.Antrag.FinalizeApplication do
+defmodule Web.Operations.Application.AllowEmployment do
   def call(%Plug.Conn{params: %{"application_id" => application_id}} = conn) do
     conn
     |> Plug.Conn.put_status(202)

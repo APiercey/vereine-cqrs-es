@@ -1,9 +1,9 @@
 alias Vereine.{
-  Aggregates.Antrag,
+  Aggregates.Application,
   Commands
 }
 
-id = Antrag.generate_id()
+id = Application.generate_id()
 
 [
   %Commands.SubmitApplication{id: id, name: "test"},
@@ -11,7 +11,7 @@ id = Antrag.generate_id()
   %Commands.AddFeature{id: id, feature: :employeer},
   %Commands.FinalizeApplication{id: id}
 ]
-|> Enum.map(&Antrag.dispatch/1)
+|> Enum.map(&Application.dispatch/1)
 
 Organizations.one(id)
 Organizations.all()

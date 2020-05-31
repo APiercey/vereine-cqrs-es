@@ -15,19 +15,19 @@ defmodule Web.Router do
   get("/favicon.ico", do: send_resp(conn, 200, ""))
 
   patch "/applications/:application_id/allow_employment" do
-    execute_operation(conn, Web.Operations.Antrag.AllowEmployment)
+    execute_operation(conn, Web.Operations.Application.AllowEmployment)
   end
 
   patch "/applications/:application_id/allow_funding" do
-    execute_operation(conn, Web.Operations.Antrag.AllowFunding)
+    execute_operation(conn, Web.Operations.Application.AllowFunding)
   end
 
   post "/applications/:application_id/finalize" do
-    execute_operation(conn, Web.Operations.Antrag.FinalizeApplication)
+    execute_operation(conn, Web.Operations.Application.FinalizeApplication)
   end
 
   post "/applications" do
-    execute_operation(conn, Web.Operations.Antrag.SubmitApplication)
+    execute_operation(conn, Web.Operations.Application.SubmitApplication)
   end
 
   defp execute_operation(conn, module) do
