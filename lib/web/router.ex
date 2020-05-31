@@ -1,5 +1,6 @@
 defmodule Web.Router do
   use Plug.Router
+  use Plug.ErrorHandler
 
   plug(:match)
 
@@ -15,33 +16,30 @@ defmodule Web.Router do
   get("/favicon.ico", do: send_resp(conn, 200, ""))
 
   patch "/applications/:application_id/allow_employment" do
-    data = %{id: UUID.uuid4()} |> prepare_response
+    {:ok, data} = {:ok, %{id: UUID.uuid4()}} |> prepare_response
 
-    conn
-    |> put_resp_content_type("application/json")
-    |> send_resp(202, data)
+    respond(conn, 202, data)
   end
 
   patch "/applications/:application_id/allow_funding" do
-    data = %{id: UUID.uuid4()} |> prepare_response
+    {:ok, data} = {:ok, %{id: UUID.uuid4()}} |> prepare_response
 
-    conn
-    |> put_resp_content_type("application/json")
-    |> send_resp(202, data)
+    respond(conn, 202, data)
   end
 
   post "/applications/:application_id/finalize" do
-    data = %{id: UUID.uuid4()} |> prepare_response
+    {:ok, data} = {:ok, %{id: UUID.uuid4()}} |> prepare_response
 
-    conn
-    |> put_resp_content_type("application/json")
-    |> send_resp(202, data)
+    respond(conn, 202, data)
   end
 
   post "/applications" do
-    with :ok <- validate(conn, name: [presence: true]) do
-      {:ok, %{id: UUID.uuid4()}}
+    with %{body_params: body_params} <- conn,
+         :ok <- validate_body_params(body_params, name: [presence: true]),
+         {:ok, id} <- Vereine.submit_antrag(body_params) do
+      {:ok, %{id: id}}
     else
+      {:error, _component, _error} = error_result -> error_result
       {:error, _error} = error_result -> error_result
     end
     |> prepare_response
@@ -54,11 +52,11 @@ defmodule Web.Router do
     end
   end
 
-  defp validate(%Plug.Conn{body_params: body_params}, validations) do
+  defp validate_body_params(body_params, validations) do
     if Vex.valid?(body_params, validations) do
       :ok
     else
-      {:error, Vex.results(body_params, validations)}
+      {:error, :validations, Vex.results(body_params, validations)}
     end
   end
 
@@ -70,11 +68,14 @@ defmodule Web.Router do
 
   defp prepare_response({:ok, data}), do: {:ok, %{data: data}}
 
-  defp prepare_response({:error, errors}) do
-    formatted_errors = Enum.map(errors, &format_error/1)
+  defp prepare_response({:error, :validations, errors}) do
+    formatted_errors =
+      Enum.map(errors, fn {:error, attr, _validation, message} ->
+        %{attr => message}
+      end)
+
     {:error, %{errors: formatted_errors}}
   end
 
-  defp format_error({:error, attr, _validation, message}),
-    do: %{attr => message}
+  defp prepare_response({:error, message}), do: {:error, %{errors: [message]}}
 end
