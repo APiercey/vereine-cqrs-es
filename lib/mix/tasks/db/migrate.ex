@@ -5,7 +5,7 @@ defmodule Mix.Tasks.Db.Migrate do
   use Mix.Task
 
   alias :mnesia, as: Mnesia
-  alias Web.Organizations.Organization
+  alias Organizations.Organization
   require Logger
 
   @impl Mix.Task
@@ -27,7 +27,7 @@ defmodule Mix.Tasks.Db.Migrate do
   defp create_event_stream do
     case Mnesia.create_table(EventStream, attributes: [:event_id, :aggegate_id, :timestamp, :data]) do
       {:atomic, :ok} -> :ok
-      {:aborted, {:already_exists, Organization}} -> :ok
+      {:aborted, {:already_exists, EventStream}} -> :ok
     end
   end
 

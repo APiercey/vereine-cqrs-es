@@ -1,5 +1,5 @@
-defmodule Web.Organizations do
-  alias Web.Organizations.{
+defmodule Organizations do
+  alias Organizations.{
     Repo,
     EventHandler
   }

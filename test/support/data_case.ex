@@ -2,7 +2,7 @@ defmodule Support.DataCase do
   use ExUnit.CaseTemplate
   alias :mnesia, as: Mnesia
 
-  alias Web.Organizations.Organization
+  alias Organizations.Organization
 
   setup do
     [EventStream, Organization]

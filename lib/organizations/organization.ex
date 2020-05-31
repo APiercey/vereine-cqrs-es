@@ -1,4 +1,4 @@
-defmodule Web.Organizations.Organization do
+defmodule Organizations.Organization do
   defstruct id: nil, name: nil, status: 'inactive', can_hire: false, can_aquire_funding: false
 
   def new(attrs \\ %{}), do: struct(__MODULE__, attrs)

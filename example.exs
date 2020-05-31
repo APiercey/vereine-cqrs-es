@@ -13,5 +13,5 @@ id = Antrag.generate_id()
 ]
 |> Enum.map(&Antrag.dispatch/1)
 
-Web.Organizations.one(id)
-Web.Organizations.all()
+Organizations.one(id)
+Organizations.all()

@@ -1,7 +1,7 @@
-defmodule Web.Organizations.EventHandler do
+defmodule Organizations.EventHandler do
   require Logger
 
-  alias Web.Organizations.{
+  alias Organizations.{
     Repo,
     Organization
   }
