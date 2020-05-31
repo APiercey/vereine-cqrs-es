@@ -34,7 +34,7 @@ defmodule Web.Applications.AllowFundingTest do
   defp create_application() do
     "/applications"
     |> path()
-    |> post!(Jason.encode!(%{test: "world"}))
+    |> post!(Jason.encode!(%{name: "B.C.R. Zoo"}))
     |> parse_body()
     |> pluck_data
   end

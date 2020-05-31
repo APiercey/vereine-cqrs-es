@@ -5,7 +5,6 @@ defmodule Support.ApiAcceptanceCase do
   using do
     quote do
       import Support.ApiAcceptanceCase
-      import HTTPoison
       import Support.Api.Helpers
     end
   end
