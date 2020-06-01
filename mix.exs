@@ -30,7 +30,8 @@ defmodule Vereine.MixProject do
       {:jason, "~> 1.2"},
       {:vex, "~> 0.8.0"},
       {:httpoison, "~> 1.6", env: :test},
-      {:elixir_uuid, "~> 1.2"}
+      {:elixir_uuid, "~> 1.2"},
+      {:credo, "~> 1.4", only: [:dev, :test], runtime: false}
     ]
   end
 end
