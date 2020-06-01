@@ -6,7 +6,7 @@ defmodule CQRSComponents.Projector do
       end
 
       def init(id) do
-        with {:ok, _} = Registry.register(:event_stream, id, []) do
+        with {:ok, _} <- Registry.register(:event_stream, id, []) do
           {:ok, []}
         end
       end

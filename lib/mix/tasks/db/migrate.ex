@@ -11,8 +11,8 @@ defmodule Mix.Tasks.Db.Migrate do
   @impl Mix.Task
 
   def run(_) do
-    with :ok = Mnesia.start(),
-         :ok = migrate() do
+    with :ok <- Mnesia.start(),
+         :ok <- migrate() do
       Logger.info("Database migrated successfully")
     end
   end
