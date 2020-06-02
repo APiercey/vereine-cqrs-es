@@ -1,10 +1,7 @@
-defmodule Organizations.EventHandler do
+defmodule Read.EventHandler do
   require Logger
 
-  alias Organizations.{
-    Repo,
-    Organization
-  }
+  alias Read.Applications
 
   alias Vereine.Events.{
     ApplicationAccepted,
@@ -16,8 +13,8 @@ defmodule Organizations.EventHandler do
   def handle_event(%ApplicationSubmitted{id: id, name: name}) do
     {:ok, _org} =
       %{id: id, name: name, status: 'inactive'}
-      |> Organization.new()
-      |> Repo.store()
+      |> Applications.Application.new()
+      |> Applications.Repo.store()
 
     :ok
   end
@@ -25,27 +22,27 @@ defmodule Organizations.EventHandler do
   def handle_event(%FeatureAdded{id: id, feature: feature}) do
     with changes <- changes_for_feature(feature),
          {:ok, _org} <-
-           Repo.one(id)
-           |> Organization.change(changes)
-           |> Repo.store() do
+           Applications.Repo.one(id)
+           |> Applications.Application.change(changes)
+           |> Applications.Repo.store() do
       :ok
     end
   end
 
   def handle_event(%ApplicationAccepted{id: id}) do
     {:ok, _org} =
-      Repo.one(id)
-      |> Organization.change(%{status: 'active'})
-      |> Repo.store()
+      Applications.Repo.one(id)
+      |> Applications.Application.change(%{status: 'active'})
+      |> Applications.Repo.store()
 
     :ok
   end
 
   def handle_event(%ApplicationRejected{id: id}) do
     {:ok, _org} =
-      Repo.one(id)
-      |> Organization.change(%{status: 'rejected'})
-      |> Repo.store()
+      Applications.Repo.one(id)
+      |> Applications.Application.change(%{status: 'rejected'})
+      |> Applications.Repo.store()
 
     :ok
   end

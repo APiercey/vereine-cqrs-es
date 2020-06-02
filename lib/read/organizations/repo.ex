@@ -1,6 +1,6 @@
-defmodule Organizations.Repo do
+defmodule Read.Organizations.Repo do
   alias :mnesia, as: Mnesia
-  alias Organizations.Organization
+  alias Read.Organizations.Organization
 
   def one(nil), do: {:error, "nil is not a valid ID"}
 

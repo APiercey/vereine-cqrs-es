@@ -1,4 +1,4 @@
-defmodule Organizations.Organization do
+defmodule Read.Applications.Application do
   defstruct id: nil, name: nil, status: 'inactive', can_hire: false, can_aquire_funding: false
 
   def new(attrs \\ %{}), do: struct(__MODULE__, attrs)
