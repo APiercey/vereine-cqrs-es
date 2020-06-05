@@ -4,8 +4,6 @@ defmodule CQRSComponents.ProjectorTest do
   alias Fakes.FakeProjector
 
   setup do
-    {:ok, _} = start_supervised({Registry, [keys: :duplicate, name: :event_stream]})
-
     id = UUID.uuid4()
 
     {:ok, _pid} = FakeProjector.start_link(id)

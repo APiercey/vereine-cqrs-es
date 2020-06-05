@@ -43,8 +43,7 @@ defmodule Read.Applications.Repo do
     end
   end
 
-  def store(as) do
-    as |> IO.inspect()
+  def store(_) do
     {:error, :incorrect_format}
   end
 end

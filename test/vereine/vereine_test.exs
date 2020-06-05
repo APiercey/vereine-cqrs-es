@@ -4,16 +4,6 @@ defmodule VereineTest do
   @valid_attributes %{name: "My Newest Aggregate"}
   @invalid_attributes %{}
 
-  setup_all do
-    :ok = Application.start(:vereine)
-
-    on_exit(fn ->
-      :ok = Application.stop(:vereine)
-    end)
-
-    :ok
-  end
-
   describe "submit_application/1" do
     test "with valid attributes" do
       assert {:ok, _id} = Vereine.submit_application(@valid_attributes)
