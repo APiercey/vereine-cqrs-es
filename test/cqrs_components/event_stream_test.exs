@@ -1,5 +1,5 @@
 defmodule CQRSComponents.EventStreamTest do
-  use Support.DataCase, async: false
+  use Support.DataCase
 
   alias CQRSComponents.EventStream
 
