@@ -1,8 +1,6 @@
 defmodule Vereine.Aggregates.Organization do
   defstruct [:id, :status, :application_id]
 
-  require Logger
-
   alias Vereine.Commands.CreateOrganization
   alias Vereine.Events.OrganizationCreated
   alias Vereine.Projecters.UpdateRead
@@ -24,8 +22,5 @@ defmodule Vereine.Aggregates.Organization do
     %{state | id: id, application_id: application_id, status: 'created'}
   end
 
-  def apply_event(state, event) do
-    Logger.info("Event not support for #{event.__struct__}")
-    state
-  end
+  def apply_event(state, _event), do: state
 end

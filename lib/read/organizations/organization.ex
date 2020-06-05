@@ -1,5 +1,5 @@
 defmodule Read.Organizations.Organization do
-  defstruct id: nil, name: nil, status: 'inactive', can_hire: false, can_aquire_funding: false
+  defstruct id: nil, name: nil, application_id: nil
 
   def new(attrs \\ %{}), do: struct(__MODULE__, attrs)
 

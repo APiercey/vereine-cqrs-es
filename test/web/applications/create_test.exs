@@ -2,7 +2,7 @@ defmodule Web.Applications.CreateTest do
   use Support.ApiAcceptanceCase
 
   @valid_body %{name: "G.W. Zoo"}
-  @invalid %{name: ""}
+  @invalid_body %{name: ""}
 
   describe "[POST] 202 /applications" do
     test "endpoint behaviour" do

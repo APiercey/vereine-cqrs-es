@@ -1,8 +1,6 @@
 defmodule Vereine.Aggregates.Application do
   defstruct [:id, :status, :name]
 
-  require Logger
-
   alias Vereine.Commands.{
     AddFeature,
     FinalizeApplication,
@@ -21,7 +19,7 @@ defmodule Vereine.Aggregates.Application do
     UpdateRead
   }
 
-  use CQRSComponents.Aggregate, projectors: [UpdateRead]
+  use CQRSComponents.Aggregate, projectors: [UpdateRead, ApplicationFinalization]
 
   def execute(%__MODULE__{status: nil}, %SubmitApplication{id: id, name: name}),
     do: {:ok, %ApplicationSubmitted{id: id, name: name}}
@@ -58,8 +56,5 @@ defmodule Vereine.Aggregates.Application do
   def apply_event(%__MODULE__{} = state, %ApplicationSubmitted{name: name}),
     do: %{state | status: 'open', name: name}
 
-  def apply_event(state, event) do
-    Logger.info("Event not support for #{event.__struct__}")
-    state
-  end
+  def apply_event(state, _event), do: state
 end

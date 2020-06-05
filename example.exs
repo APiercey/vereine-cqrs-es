@@ -9,4 +9,4 @@ Vereine.allow_employment(id)
 Vereine.allow_funding(id)
 Vereine.finalize_application(id)
 
-Organizations.all()
+Read.Organizations.all()
