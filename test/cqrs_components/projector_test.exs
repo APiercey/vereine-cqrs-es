@@ -1,5 +1,5 @@
 defmodule CQRSComponents.ProjectorTest do
-  use ExUnit.Case, async: false
+  use ExUnit.Case
 
   alias Fakes.FakeProjector
 
@@ -8,9 +8,7 @@ defmodule CQRSComponents.ProjectorTest do
 
     {:ok, _pid} = FakeProjector.start_link(id)
 
-    %{
-      id: id
-    }
+    %{id: id}
   end
 
   describe "get/1" do
