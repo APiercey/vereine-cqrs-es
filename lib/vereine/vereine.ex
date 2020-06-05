@@ -2,9 +2,9 @@ defmodule Vereine do
   alias Vereine.Aggregates.Application
 
   alias Vereine.Commands.{
-    SubmitApplication,
     AddFeature,
-    FinalizeApplication
+    FinalizeApplication,
+    SubmitApplication
   }
 
   def submit_application(attrs) do

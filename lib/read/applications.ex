@@ -1,6 +1,6 @@
 defmodule Read.Applications do
-  alias Read.Applications.ApplicationRepo
+  alias Read.Applications.Repo
 
-  defdelegate all(), to: ApplicationRepo
-  defdelegate one(id), to: ApplicationRepo
+  defdelegate all(), to: Repo
+  defdelegate one(id), to: Repo
 end

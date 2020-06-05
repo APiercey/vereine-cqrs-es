@@ -3,6 +3,8 @@ defmodule CQRSComponents.Aggregate do
     projectors = Keyword.get(opts, :projectors, [])
 
     quote do
+      require Logger
+
       def start_link(id),
         do: GenServer.start_link(__MODULE__, [id, %__MODULE__{id: id}], name: :"#{id}")
 
@@ -44,7 +46,7 @@ defmodule CQRSComponents.Aggregate do
       defp start_projectors(id, modules) do
         result =
           Enum.map(modules, fn module ->
-            {:ok, pid} = module.start_link("#{module}_#{id}")
+            {:ok, pid} = module.start_link(id)
             {module, pid}
           end)
 

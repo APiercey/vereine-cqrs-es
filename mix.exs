@@ -7,6 +7,7 @@ defmodule Vereine.MixProject do
       version: "0.1.0",
       elixir: "~> 1.9",
       start_permanent: Mix.env() == :prod,
+      aliases: aliases(),
       deps: deps(),
       elixirc_paths: compiler_paths(Mix.env())
     ]
@@ -17,6 +18,12 @@ defmodule Vereine.MixProject do
     [
       extra_applications: [:logger, :mnesia],
       mod: {Vereine.Application, []}
+    ]
+  end
+
+  defp aliases do
+    [
+      test: "test --no-start"
     ]
   end
 

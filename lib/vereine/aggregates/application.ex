@@ -4,23 +4,24 @@ defmodule Vereine.Aggregates.Application do
   require Logger
 
   alias Vereine.Commands.{
-    SubmitApplication,
+    AddFeature,
     FinalizeApplication,
-    AddFeature
+    SubmitApplication
   }
 
   alias Vereine.Events.{
-    ApplicationSubmitted,
     ApplicationAccepted,
     ApplicationRejected,
+    ApplicationSubmitted,
     FeatureAdded
   }
 
   alias Vereine.Projecters.{
-    UpdateWeb
+    ApplicationFinalization,
+    UpdateRead
   }
 
-  use CQRSComponents.Aggregate, projectors: [UpdateWeb]
+  use CQRSComponents.Aggregate, projectors: [UpdateRead]
 
   def execute(%__MODULE__{status: nil}, %SubmitApplication{id: id, name: name}),
     do: {:ok, %ApplicationSubmitted{id: id, name: name}}

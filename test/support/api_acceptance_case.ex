@@ -1,5 +1,5 @@
 defmodule Support.ApiAcceptanceCase do
-  use ExUnit.CaseTemplate
+  use ExUnit.CaseTemplate, async: false
   import Support.Api.Helpers
 
   using do
@@ -7,6 +7,16 @@ defmodule Support.ApiAcceptanceCase do
       import Support.ApiAcceptanceCase
       import Support.Api.Helpers
     end
+  end
+
+  setup_all do
+    :ok = Application.start(:vereine)
+
+    on_exit(fn ->
+      :ok = Application.stop(:vereine)
+    end)
+
+    :ok
   end
 
   def returns_status(%HTTPoison.Response{} = response, status) do

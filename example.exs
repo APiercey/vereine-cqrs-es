@@ -3,15 +3,10 @@ alias Vereine.{
   Commands
 }
 
-id = Application.generate_id()
+{:ok, id} = %{name: "test"} |> Vereine.submit_application()
 
-[
-  %Commands.SubmitApplication{id: id, name: "test"},
-  %Commands.AddFeature{id: id, feature: :fundable},
-  %Commands.AddFeature{id: id, feature: :employeer},
-  %Commands.FinalizeApplication{id: id}
-]
-|> Enum.map(&Application.dispatch/1)
+Vereine.allow_employment(id)
+Vereine.allow_funding(id)
+Vereine.finalize_application(id)
 
-Organizations.one(id)
 Organizations.all()

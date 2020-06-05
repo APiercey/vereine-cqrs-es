@@ -10,38 +10,41 @@ defmodule Read.Applications.Repo do
     end
     |> Mnesia.transaction()
     |> case do
-      {:atomic, [{_module, _id, Application}]} ->
-        Application
+      {:atomic, [{_module, _id, application}]} ->
+        application
 
       {:aborted, _reason} = error ->
         {:error, error}
     end
   end
 
-  def all() do
+  def all do
     fn ->
       Mnesia.match_object({Application, :_, :_})
     end
     |> Mnesia.transaction()
     |> case do
       {:atomic, result} ->
-        result |> Enum.map(fn {_module, _id, Application} -> Application end)
+        result |> Enum.map(fn {_module, _id, application} -> application end)
 
       {:aborted, _reason} = error ->
         {:error, error}
     end
   end
 
-  def store(%Application{id: id} = Application) do
+  def store(%Application{id: id} = application) do
     fn ->
-      Mnesia.write({Application, id, Application})
+      Mnesia.write({Application, id, application})
     end
     |> Mnesia.transaction()
     |> case do
-      {:atomic, :ok} -> {:ok, Application}
+      {:atomic, :ok} -> {:ok, application}
       {:aborted, _reason} = error -> {:error, error}
     end
   end
 
-  def store(_), do: {:error, :incorrect_format}
+  def store(as) do
+    as |> IO.inspect()
+    {:error, :incorrect_format}
+  end
 end

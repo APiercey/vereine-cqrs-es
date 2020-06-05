@@ -13,6 +13,16 @@ defmodule CQRSComponents.AggregateTest do
       message: Keyword.get(opts, :message, "I will never financially recover from this.")
     }
 
+  setup_all do
+    :ok = Application.start(:vereine)
+
+    on_exit(fn ->
+      :ok = Application.stop(:vereine)
+    end)
+
+    :ok
+  end
+
   describe "dispatch/1" do
     test "returns :ok and event when successful" do
       %{id: id} = command = fixture(:command)

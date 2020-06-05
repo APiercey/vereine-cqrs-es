@@ -1,20 +1,23 @@
 defmodule CQRSComponents.ProjectorTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: false
 
-  alias Fakes.{
-    FakeProjector
-  }
-
-  @id "uuid-1"
+  alias Fakes.FakeProjector
 
   setup do
-    {:ok, _pid} = FakeProjector.start_link(@id)
-    :ok
+    {:ok, _} = start_supervised({Registry, [keys: :duplicate, name: :event_stream]})
+
+    id = UUID.uuid4()
+
+    {:ok, _pid} = FakeProjector.start_link(id)
+
+    %{
+      id: id
+    }
   end
 
   describe "get/1" do
-    test "returns state of living projector" do
-      assert {:ok, []} = FakeProjector.get(@id)
+    test "returns state of living projector", %{id: id} do
+      assert {:ok, []} = FakeProjector.get(id)
     end
 
     test "returns :error when projector is not alive" do
@@ -25,11 +28,11 @@ defmodule CQRSComponents.ProjectorTest do
   end
 
   describe "subscribes to :event_stream" do
-    test "handles a events" do
+    test "handles a events", %{id: id} do
       event = "I saw a tiger, and the tiger saw a man"
-      publish_event(event, @id)
+      publish_event(event, id)
 
-      assert {:ok, [^event]} = FakeProjector.get(@id)
+      assert {:ok, [^event]} = FakeProjector.get(id)
     end
   end
 
