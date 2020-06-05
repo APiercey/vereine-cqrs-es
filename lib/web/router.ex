@@ -26,6 +26,10 @@ defmodule Web.Router do
     execute_operation(conn, Web.Operations.Application.FinalizeApplication)
   end
 
+  get "/applications/:application_id" do
+    execute_operation(conn, Web.Operations.Application.FetchApplication)
+  end
+
   post "/applications" do
     execute_operation(conn, Web.Operations.Application.SubmitApplication)
   end
