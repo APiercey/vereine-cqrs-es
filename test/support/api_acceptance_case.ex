@@ -1,24 +1,28 @@
 defmodule Support.ApiAcceptanceCase do
   use ExUnit.CaseTemplate, async: false
-  import Support.Api.Helpers
-  alias :mnesia, as: Mnesia
+  import Support.Helpers.Api
 
-  alias Read.Applications.Application
-  alias Read.Organizations.Organization
+  alias Support.Helpers.Database
 
   using do
     quote do
       import Support.ApiAcceptanceCase
-      import Support.Api.Helpers
+      import Support.Helpers.Api
     end
   end
 
-  setup do
-    [EventStream, Organization, Application]
-    |> Enum.map(&Mnesia.clear_table/1)
-    |> Enum.all?(fn {:atomic, :ok} -> true end)
+  setup_all do
+    :ok = Application.start(:vereine)
+
+    on_exit(fn ->
+      :ok = Application.stop(:vereine)
+    end)
 
     :ok
+  end
+
+  setup do
+    :ok = Database.clear_database()
   end
 
   def returns_status(%HTTPoison.Response{} = response, status) do

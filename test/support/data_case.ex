@@ -1,15 +1,18 @@
 defmodule Support.DataCase do
   use ExUnit.CaseTemplate, async: false
-  alias :mnesia, as: Mnesia
+  alias Support.Helpers.Database
 
-  alias Read.Applications.Application
-  alias Read.Organizations.Organization
+  setup_all do
+    :ok = Application.start(:vereine)
 
-  setup do
-    [EventStream, Organization, Application]
-    |> Enum.map(&Mnesia.clear_table/1)
-    |> Enum.all?(fn {:atomic, :ok} -> true end)
+    on_exit(fn ->
+      :ok = Application.stop(:vereine)
+    end)
 
     :ok
+  end
+
+  setup do
+    :ok = Database.clear_database()
   end
 end

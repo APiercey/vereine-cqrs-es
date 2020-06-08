@@ -22,7 +22,9 @@ defmodule Vereine.MixProject do
   end
 
   defp aliases do
-    []
+    [
+      test: "test --no-start"
+    ]
   end
 
   def compiler_paths(:test), do: ["test/fakes", "test/support"] ++ compiler_paths(:prod)

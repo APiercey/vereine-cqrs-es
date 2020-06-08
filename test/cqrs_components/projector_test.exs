@@ -1,5 +1,5 @@
 defmodule CQRSComponents.ProjectorTest do
-  use ExUnit.Case
+  use Support.DataCase
 
   alias Fakes.FakeProjector
 
