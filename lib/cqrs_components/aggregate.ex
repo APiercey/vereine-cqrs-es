@@ -27,8 +27,8 @@ defmodule CQRSComponents.Aggregate do
       def dispatch(%{id: id} = command) do
         with {:valid, true} <- {:valid, CQRSComponents.Command.valid?(command)},
              {:ok, _pid} <- maybe_start_server(id),
-             {:ok, event} <- GenServer.call(:"#{id}", {:execute_command, command}),
-             :ok <- CQRSComponents.EventStream.store_event(id, event),
+             {:ok, aggregate_event} <- GenServer.call(:"#{id}", {:execute_command, command}),
+             {:ok, event} <- CQRSComponents.EventStream.store_event(id, aggregate_event),
              :ok <- publish_event(id, event) do
           {:ok, id}
         else
@@ -39,6 +39,7 @@ defmodule CQRSComponents.Aggregate do
       defp build_state(id, data) do
         id
         |> CQRSComponents.EventStream.fetch_events_by_aggregate_id()
+        |> Enum.map(fn %CQRSComponents.Event{event: event} -> event end)
         |> Enum.reduce(data, &apply_event(&2, &1))
       end
 

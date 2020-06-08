@@ -9,6 +9,11 @@ defmodule Mix.Tasks.Db.Migrate do
   alias Read.Applications.Application
   alias Read.Organizations.Organization
 
+  alias CQRSComponents.{
+    Event,
+    StreamCheckpoint
+  }
+
   require Logger
 
   @impl Mix.Task
@@ -21,17 +26,27 @@ defmodule Mix.Tasks.Db.Migrate do
   end
 
   defp migrate do
-    with :ok <- create_event_stream(),
+    with :ok <- create_event(),
+         :ok <- create_stream_checkpoint(),
          :ok <- create_application(),
          :ok <- create_organization() do
       :ok
     end
   end
 
-  defp create_event_stream do
-    case Mnesia.create_table(EventStream, attributes: [:event_id, :aggegate_id, :timestamp, :data]) do
+  defp create_event do
+    case Mnesia.create_table(Event, attributes: [:event_id, :aggegate_id, :timestamp, :data]) do
       {:atomic, :ok} -> :ok
-      {:aborted, {:already_exists, EventStream}} -> :ok
+      {:aborted, {:already_exists, Event}} -> :ok
+    end
+  end
+
+  defp create_stream_checkpoint do
+    case Mnesia.create_table(StreamCheckpoint,
+           attributes: [:process_name, :event_id]
+         ) do
+      {:atomic, :ok} -> :ok
+      {:aborted, {:already_exists, StreamCheckpoint}} -> :ok
     end
   end
 

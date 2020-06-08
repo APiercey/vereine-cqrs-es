@@ -1,6 +1,8 @@
 defmodule CQRSComponents.AggregateTest do
   use Support.DataCase
 
+  alias CQRSComponents.Event
+
   alias Fakes.{
     FakeAggregate,
     FakeCommand,
@@ -27,7 +29,7 @@ defmodule CQRSComponents.AggregateTest do
       Registry.register(:event_stream, id, [])
 
       assert {:ok, _} = FakeAggregate.dispatch(command)
-      assert_receive {:publish_event, %FakeEvent{message: ^message}}
+      assert_receive {:publish_event, %Event{event: %FakeEvent{message: ^message}}}
     end
 
     test "multiple aggregates don't share event streams" do
@@ -38,7 +40,7 @@ defmodule CQRSComponents.AggregateTest do
 
       assert {:ok, _} = FakeAggregate.dispatch(command_two)
       assert {:ok, _} = FakeAggregate.dispatch(command_one)
-      assert_receive {:publish_event, %FakeEvent{id: ^expected_id}}
+      assert_receive {:publish_event, %Event{event: %FakeEvent{id: ^expected_id}}}
     end
   end
 
