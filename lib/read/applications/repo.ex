@@ -13,6 +13,9 @@ defmodule Read.Applications.Repo do
       {:atomic, [{_module, _id, application}]} ->
         application
 
+      {:atomic, []} ->
+        {:error, "Application with ID #{id} does not exist"}
+
       {:aborted, _reason} = error ->
         {:error, error}
     end

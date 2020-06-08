@@ -44,7 +44,7 @@ defmodule Read.EventHandler do
   def handle_event(%OrganizationCreated{id: id, application_id: application_id}) do
     with %Applications.Application{name: name} <- Applications.Repo.one(application_id),
          {:ok, _} <- update_application(application_id, %{organization_id: id}),
-         {:ok, _} <- create_organization(%{id: id, application_id: application_id, name: name}) do
+         {:ok, _} <- create_organization(%{id: id, name: name}) do
       :ok
     end
   end
