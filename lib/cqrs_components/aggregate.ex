@@ -8,7 +8,6 @@ defmodule CQRSComponents.Aggregate do
       def start_link(id),
         do: GenServer.start_link(__MODULE__, [id, %__MODULE__{id: id}], name: :"#{id}")
 
-      # TODO: Fetch events and reduce into data state
       def init([id, init_state]) do
         with state <- build_state(id, init_state),
              {:ok, pid_tuples} <- start_projectors(id, unquote(projectors)) do
